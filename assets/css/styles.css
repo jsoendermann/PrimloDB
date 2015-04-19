@@ -1,0 +1,28 @@
+#collections-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#collections-list li {
+   
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    margin: 0 0 10px 0;
+
+    cursor: pointer;
+
+    font-size:12pt;
+
+    height: 34px;
+
+    }
+
+#collections-list li:hover {
+        background-color: #f3f3f3;
+    }
+
+#collection-name {
+    padding-bottom: 10px;
+}
