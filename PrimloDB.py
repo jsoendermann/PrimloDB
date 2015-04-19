@@ -17,6 +17,7 @@ import re
 import datetime
 from uuid import uuid4
 from copy import deepcopy
+from sys import argv
 
 # TODO test with cedict data
 
@@ -348,5 +349,7 @@ def js(filename):
 def fonts(filename):
     return static_file(filename, root='assets/fonts/')
 
-
-run(host='localhost', port=8080, debug=True)
+if len(argv) == 2 and argv[1] == '-public':
+    run(host='0.0.0.0', port=8080, debug=False)
+else:
+    run(host='localhost', port=8080, debug=False)
