@@ -81,7 +81,7 @@
 
 {% macro renderRecord(record, listIndex) %}
     <tr>
-        {% for columnInfo in collection_info.schema %}
+        {% for columnInfo in schema %}
             {% if columnInfo['name'] == 'UUID' %}    
                 <!-- UUID -->
             {% elif columnInfo.type == 'list' and listIndex == 0 and record[columnInfo['name']]|length == 0 %}
@@ -200,7 +200,7 @@
          <table class="table table-bordered table-condensed">
             <thead>
                <tr>
-                  {{ renderTableHead('', collection_info.schema) }}
+                  {{ renderTableHead('', schema) }}
                   <th><!-- edit buttons --></th>
                </tr>
             </thead>
@@ -221,7 +221,7 @@
                <div style="border-color: #ddd; border-width: 1px; border-radius: 4px 4px 0 0; border-style: solid; padding: 15px 10px 15px;">
 
                <form id="add-data-form" action="/collections/{{collection_name}}/add-data/" method="post">
-                  {{ renderAddingForm(collection_info.schema) }}
+                  {{ renderAddingForm(schema) }}
                   <br>
                   <button class="btn btn-primary" type="submit">Add Record</button>
                </form>
@@ -229,12 +229,9 @@
                </div>
             </div>
             <div class="col-md-6">
-               <h3>About</h3>
+               <h3>Help</h3>
                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lacus tortor, pulvinar et convallis dictum, pulvinar vitae sapien. Proin consectetur quis odio ac iaculis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla non sapien nec nisi pharetra ornare vitae eu tortor. Cras in rhoncus nulla. Fusce pharetra, lectus et accumsan tristique, arcu neque congue lacus, sit amet pellentesque ligula odio id massa. Maecenas sit amet enim sit amet mauris facilisis tristique ultricies sed lorem. Etiam justo magna, aliquam vitae eros rhoncus, viverra condimentum tortor. Cras vehicula sed lacus vitae lacinia.
-               </p>
-               <p>
-                  Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed et accumsan sem, ac dignissim ipsum. Fusce hendrerit massa ac diam mollis, vitae ullamcorper quam bibendum. Vestibulum eget nisi quis libero porta lacinia in non nunc. Curabitur pretium finibus velit non tincidunt. Nullam volutpat augue in condimentum interdum. Ut in euismod nulla. Suspendisse vitae arcu magna. Aenean a ipsum eu mauris pellentesque convallis eu ut ipsum. Donec euismod sit amet sapien vel elementum. Donec quis consequat libero.
+                 This is where you can add records to your collection. Cycle through the fields with [tab]. When you are done press [enter]. The record will be created and the fields will be cleared.
                </p>
             </div>
          </div>
@@ -249,16 +246,12 @@
          <div class="row">
             <div class="col-md-6">
                <h3>Data Format</h3>
-               {{ renderSchema(collection_info.schema) }}
+               {{ renderSchema(schema) }}
             </div>
             <div class="col-md-6">
-               <h3>About</h3>
-               <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lacus tortor, pulvinar et convallis dictum, pulvinar vitae sapien. Proin consectetur quis odio ac iaculis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla non sapien nec nisi pharetra ornare vitae eu tortor. Cras in rhoncus nulla. Fusce pharetra, lectus et accumsan tristique, arcu neque congue lacus, sit amet pellentesque ligula odio id massa. Maecenas sit amet enim sit amet mauris facilisis tristique ultricies sed lorem. Etiam justo magna, aliquam vitae eros rhoncus, viverra condimentum tortor. Cras vehicula sed lacus vitae lacinia.
-               </p>
-               <p>
-                  Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed et accumsan sem, ac dignissim ipsum. Fusce hendrerit massa ac diam mollis, vitae ullamcorper quam bibendum. Vestibulum eget nisi quis libero porta lacinia in non nunc. Curabitur pretium finibus velit non tincidunt. Nullam volutpat augue in condimentum interdum. Ut in euismod nulla. Suspendisse vitae arcu magna. Aenean a ipsum eu mauris pellentesque convallis eu ut ipsum. Donec euismod sit amet sapien vel elementum. Donec quis consequat libero.
-               </p>
+               <h3>Help</h3>
+               <p>Here you can change the structure of your data. Think of the list on the left as the features of your data: every record will contain information for every entry in the list.</p>
+               <p>Your records can also contain lists (but no sublists, sorry). One example for a collection in which this could be useful is a dictionary of words that contains a list of translations for every word.</p>
             </div>
 
             <!-- Modal -->
@@ -319,16 +312,16 @@
 
       <div role="tabpanel" class="tab-pane" id="settings">
         <div class="row">
-            <div class="col-md-6">
+            <!--div class="col-md-6"-->
                <h3>Settings</h3>
                <form>
                    <button type="button" class="btn btn-danger" id="delete-collection">Delete collection</button>
                </form>
-            </div>
+            <!--/div>
             <div class="col-md-6">
                <h3>About</h3>
                <p>Arst</p>
-            </div>
+            </div-->
         </div>
       </div>
    </div>

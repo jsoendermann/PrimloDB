@@ -49,20 +49,24 @@ if not 'collections_info' in settings:
 
 # load collections
 collections = {}
+schemas = {}
 for collection_info in settings['collections_info']:
-    filename = join(settings['data_dir'], collection_info['name'] + '.yml')
+    collection_name = collection_info['name']
+    filename = join(settings['data_dir'], collection_name + '.yml')
     if isfile(filename):
         with open(filename, 'r') as collectionfile:
-            collections[collection_info['name']] = load(collectionfile.read(), Loader=Loader)
+            data = load(collectionfile.read(), Loader=Loader)
+            collections[collection_name] = data['data']
+            schemas[collection_name] = data['schema']
     else:
-        collections[collection_info['name']] = []
+        collections[collection_name] = []
+        schemas[collection_name] = []
 
     
     
 # TODO create backups of collection files
 # TODO timer that saves every 2 minutes
 # TODO no spaces in column names
-# TODO save schema in yml file
 # TODO make it possible to edit data
 # 
 # exit handler
@@ -78,7 +82,8 @@ def exit_handler():
 
     for collection_info in settings['collections_info']:
         filename = join(settings['data_dir'], collection_info['name'] + '.yml')
-        collection_yaml = dump(collections[collection_info['name']], Dumper=Dumper)
+        collection_name = collection_info['name']
+        collection_yaml = dump({'schema': schemas[collection_name], 'data': collections[collection_name]}, Dumper=Dumper)
         f = open(filename, 'w+')
         f.seek(0)
         f.write(collection_yaml)
@@ -107,69 +112,34 @@ def collections_create():
         if new_name == collection_info['name']:
             redirect('/collections/')
     
-    if new_name == 'Countries':
-        settings['collections_info'].append({'name': new_name, 
-            'schema': [{'name': 'UUID', 'type': 'number'},
+    if new_name == 'CountriesDemo':
+        settings['collections_info'].append({'name': new_name})
+        schemas[new_name] = [{'name': 'UUID', 'type': 'number'},
                 {'name': 'Name', 'type': 'text'}, 
                 {'name': 'GDP', 'type': 'number'},
                 {'name': 'Cities', 'type': 'list', 'subcolumns':
                     [{'name': 'Name', 'type': 'text'},
                         {'name': 'Population', 'type': 'number'},
-                        {'name': 'Avg_temperature', 'type': 'number'}]}]})
+                        {'name': 'Avg_temperature', 'type': 'number'}]}]
         collections[new_name] = [
-                {'UUID': uuid4().int, 'Name': 'France', 'GDP': 2587000000000, 'Cities': [
-                    {'Name': 'Paris', 'Population': 2273305, 'Avg_temperature': 12.5},
-                    {'Name': 'Marseille', 'Population': 850636, 'Avg_temperature': 15.5}]},
-                {'UUID': uuid4().int, 'Name': 'Germany', 'GDP': 3820000000000, 'Cities': [
-                    {'Name': 'Cologne', 'Population': 1034175, 'Avg_temperature': 10.3},
-                    {'Name': 'Hamburg', 'Population': 1751775, 'Avg_temperature': 9.4},
-                    {'Name': 'Dresden', 'Population': 530754, 'Avg_temperature': 9.37}]},
-                {'UUID': uuid4().int, 'Name': 'Greece', 'GDP': 271308000000, 'Cities': [
-                    {'Name': 'Athens', 'Population': 3090508, 'Avg_temperature': 18.5},
-                    {'Name': 'Thessaloniki', 'Population': 325182, 'Avg_temperature': 15.1}]}]
-
-
-
-    #if new_name == 'Sentence Packs':
-        #settings['collections_info'].append({'name': new_name,
-            #'schema': [{'name': 'UUID', 'type': 'integer', 'required': True, 'unique': True},
-                #{'name': 'Name', 'type': 'text', 'required': True, 'unique': True}, 
-                #{'name': 'Sentences', 'type': 'list', 'subcolumns':
-                    #[{'name': 'UUID', 'type': 'integer', 'required': True, 'unique': True},
-                        #{'name': 'Language', 'type': 'text', 'required': True, 'unique': True},
-                        #{'name': 'Words', 'type': 'list', 'subcolumns':
-                            #[{'name': 'UUID', 'type': 'integer', 'required': True, 'unique': True},
-                                #{'name': 'Word', 'type': 'text', 'required': True, 'unique': False}]},
-                        #{'name': 'E2', 'type': 'list', 'subcolumns':
-                            #[{'name': 'UUID', 'type': 'integer', 'required': True, 'unique': True},
-                                #{'name': 'Elevalue', 'type': 'integer', 'required': False, 'unique': False}]}]},
-                #{'name': 'Users', 'type': 'list', 'subcolumns':
-                    #[{'name': 'UUID', 'type': 'integer', 'required': True, 'unique': True},
-                        #{'name': 'Name', 'type': 'text', 'required': True, 'unique': False}]}]})
-        #collections[new_name] = [
-                #{'UUID': uuid4().int, 'Name': 'First Pack', 'Sentences': [
-                    #{'UUID': uuid4().int, 'Language': 'French', 'Words': [
-                        #{'UUID': uuid4().int, 'Word': 'Bonjour'},
-                        #{'UUID': uuid4().int, 'Word': 'Paris'}], 'E2': [
-                            #{'UUID': uuid4().int, 'Elevalue': 1},
-                            #{'UUID': uuid4().int, 'Elevalue': None},
-                            #{'UUID': uuid4().int, 'Elevalue': 1}]},
-                    #{'UUID': uuid4().int, 'Language': 'German', 'Words': [
-                        #{'UUID': uuid4().int, 'Word': 'Hallo'},
-                        #{'UUID': uuid4().int, 'Word': ','},
-                        #{'UUID': uuid4().int, 'Word': 'geht'},
-                        #{'UUID': uuid4().int, 'Word': 'es'}], 'E2': [
-                            #{'UUID': uuid4().int, 'Elevalue': 1},
-                            #{'UUID': uuid4().int, 'Elevalue': None},
-                            #{'UUID': uuid4().int, 'Elevalue': 1}]}],
-                    #'Users': [
-                        #{'UUID': uuid4().int, 'Name': 'User1'},
-                        #{'UUID': uuid4().int, 'Name': 'User2'},
-                        #{'UUID': uuid4().int, 'Name': 'User3'},
-                        #{'UUID': uuid4().int, 'Name': 'User4'},
-                        #{'UUID': uuid4().int, 'Name': 'User5'}]}]
-
-
+                {'UUID': uuid4().int, 'Name': 'France', 'GDP': 2587000000000.0, 'Cities': [
+                    {'Name': 'Paris', 'Population': 2273305.0, 'Avg_temperature': 12.5},
+                    {'Name': 'Marseille', 'Population': 850636.0, 'Avg_temperature': 15.5}]},
+                {'UUID': uuid4().int, 'Name': 'Germany', 'GDP': 3820000000000.0, 'Cities': [
+                    {'Name': 'Cologne', 'Population': 1034175.0, 'Avg_temperature': 10.3},
+                    {'Name': 'Hamburg', 'Population': 1751775.0, 'Avg_temperature': 9.4},
+                    {'Name': 'Dresden', 'Population': 530754.0, 'Avg_temperature': 9.37}]},
+                {'UUID': uuid4().int, 'Name': 'Greece', 'GDP': 271308000000.0, 'Cities': [
+                    {'Name': 'Athens', 'Population': 3090508.0, 'Avg_temperature': 18.5},
+                    {'Name': 'Thessaloniki', 'Population': 325182.0, 'Avg_temperature': 15.1}]}]
+    else:
+        settings['collections_info'].append({'name': new_name})
+        schemas[new_name] = [{'name': 'UUID', 'type': 'number'},
+            {'name': 'Example_field', 'type': 'text'}]
+        collections[new_name] = [
+                {'UUID': uuid4().int, 'Example_field': 'First record'},
+                {'UUID': uuid4().int, 'Example_field': 'Second record'}]
+    
 
 
     redirect('/collections/')
@@ -189,6 +159,7 @@ def collections_destroy(collection_name):
     if collection_info:
         settings['collections_info'].remove(collection_info)
         collections.pop(collection_name)
+        schemas.pop(collection_name)
 
         filename = join(settings['data_dir'], collection_name + '.yml')
         if isfile(filename):
@@ -208,21 +179,18 @@ def max_list_length(record):
 @get('/collections/<collection_name>/')
 @view('collections_show')
 def collections_show(collection_name):
-    for collection_info in settings['collections_info']:
-        if collection_info['name'] == collection_name:   
-            records = collections[collection_name]
+    records = collections[collection_name]
 
-            yaml_data = deepcopy(collections[collection_name])
-            delete_field_from_dicts(yaml_data, 'UUID')
+    yaml_data = {'schema': schemas[collection_name], 'data': collections[collection_name]}
 
-            collection_info_and_records = {
-                    'collection_name': collection_name,
-                    'collection_info': collection_info, 
-                    'records': [dict(record, **{'max_list_length': max_list_length(record)}) for record in records], 
-                    'yaml': dump(yaml_data, Dumper=Dumper)}
+    collection_info_and_records = {
+            'collection_name': collection_name,
+            'schema': schemas[collection_name], 
+            'records': [dict(record, **{'max_list_length': max_list_length(record)}) for record in records], 
+            'yaml': dump(yaml_data, Dumper=Dumper)}
 
-            #print(collection_info_and_records)
-            return collection_info_and_records
+    #print(collection_info_and_records)
+    return collection_info_and_records
 
 def remove_object_with_uuid_from_collection(uuid, object_tree):
     print(object_tree)
@@ -242,14 +210,10 @@ def remove_object_with_uuid_from_collection(uuid, object_tree):
 @post('/collections/<collection_name>/add-data/')
 def collections_add_data(collection_name):
     data = request.forms.dict
-    print(request.forms['input-GDP'])
 
     new_record = {'UUID': uuid4().int}
     
-    schema = None
-    for collection_info in settings['collections_info']:
-        if collection_info['name'] == collection_name:
-            schema = collection_info['schema']
+    schema = schemas[collection_name]
 
     for column in schema:
         if column['name'] == 'UUID':
@@ -300,10 +264,7 @@ def collections_add_field(collection_name, field_information):
     fields = fields_str.split('.')
 
     # edit schema
-    schema = None
-    for collection_info in settings['collections_info']:
-        if collection_info['name'] == collection_name:
-            schema = collection_info['schema']
+    schema = schemas[collection_name]
     if len(fields) == 1:
         schema.append({'name': fields[0], 'type': type_.lower()})
     elif len(fields) == 2:
@@ -337,10 +298,7 @@ def collections_delete_field(collection_name, field_name):
     # TODO CRITICAL make backup
     
     # edit schema
-    schema = None
-    for collection_info in settings['collections_info']:
-        if collection_info['name'] == collection_name:
-            schema = collection_info['schema']
+    schema = schemas[collection_name]
     for i in range(len(fields)-1):
         field = fields[i]
         for field_schema in schema:
