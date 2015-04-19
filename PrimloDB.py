@@ -11,7 +11,7 @@ except ImportError:
 from os.path import *
 from os import *
 from glob import glob
-from shutil import move
+from shutil import move, copyfile
 import atexit
 import re
 import datetime
@@ -21,17 +21,47 @@ from copy import deepcopy
 # TODO test with cedict data
 
 SETTINGS_DIR = user_data_dir('PrimloDB', 'YangChuanzhang')
-SETTINGS_FILENAME = join(SETTINGS_DIR, 'settings.yml')
+SETTINGS_FILENAME = join(SETTINGS_DIR, 'settings.yaml')
 
+collections = {}
+schemas = {}
+settings = {}
+
+def addExampleCollections():
+    print('Creating example collections...')
+    # Countries
+    settings['collections_info'].append({'name': 'Countries'})
+    schemas['Countries'] = [{'name': 'UUID', 'type': 'number'},
+            {'name': 'Name', 'type': 'text'}, 
+            {'name': 'GDP', 'type': 'number'},
+            {'name': 'Cities', 'type': 'list', 'subcolumns':
+                [{'name': 'Name', 'type': 'text'},
+                    {'name': 'Population', 'type': 'number'},
+                    {'name': 'Avg_temperature', 'type': 'number'}]}]
+    collections['Countries'] = [
+            {'UUID': uuid4().int, 'Name': 'France', 'GDP': 2587000000000.0, 'Cities': [
+                {'Name': 'Paris', 'Population': 2273305.0, 'Avg_temperature': 12.5},
+                {'Name': 'Marseille', 'Population': 850636.0, 'Avg_temperature': 15.5}]},
+            {'UUID': uuid4().int, 'Name': 'Germany', 'GDP': 3820000000000.0, 'Cities': [
+                {'Name': 'Cologne', 'Population': 1034175.0, 'Avg_temperature': 10.3},
+                {'Name': 'Hamburg', 'Population': 1751775.0, 'Avg_temperature': 9.4},
+                {'Name': 'Dresden', 'Population': 530754.0, 'Avg_temperature': 9.37}]},
+            {'UUID': uuid4().int, 'Name': 'Greece', 'GDP': 271308000000.0, 'Cities': [
+                {'Name': 'Athens', 'Population': 3090508.0, 'Avg_temperature': 18.5},
+                {'Name': 'Thessaloniki', 'Population': 325182.0, 'Avg_temperature': 15.1}]}]
+
+createExampleCollections = False
 # create config dir if it doesn't exist
 if not isdir(SETTINGS_DIR):
     makedirs(SETTINGS_DIR)
 
 # load settings file if it exists
-settings = {}
 if isfile(SETTINGS_FILENAME):
     with open(SETTINGS_FILENAME, 'r') as settingsfile:
         settings = load(settingsfile.read(), Loader=Loader)
+else:
+    createExampleCollections = True
+    
 
 # set data dir to default if it doesn't exist
 if not 'data_dir' in settings:
@@ -48,11 +78,9 @@ if not 'collections_info' in settings:
     settings['collections_info'] = []
 
 # load collections
-collections = {}
-schemas = {}
 for collection_info in settings['collections_info']:
     collection_name = collection_info['name']
-    filename = join(settings['data_dir'], collection_name + '.yml')
+    filename = join(settings['data_dir'], collection_name + '.yaml')
     if isfile(filename):
         with open(filename, 'r') as collectionfile:
             data = load(collectionfile.read(), Loader=Loader)
@@ -62,6 +90,8 @@ for collection_info in settings['collections_info']:
         collections[collection_name] = []
         schemas[collection_name] = []
 
+if createExampleCollections:
+    addExampleCollections()
     
     
 # TODO create backups of collection files
@@ -81,7 +111,7 @@ def exit_handler():
     f.close()
 
     for collection_info in settings['collections_info']:
-        filename = join(settings['data_dir'], collection_info['name'] + '.yml')
+        filename = join(settings['data_dir'], collection_info['name'] + '.yaml')
         collection_name = collection_info['name']
         collection_yaml = dump({'schema': schemas[collection_name], 'data': collections[collection_name]}, Dumper=Dumper)
         f = open(filename, 'w+')
@@ -112,33 +142,12 @@ def collections_create():
         if new_name == collection_info['name']:
             redirect('/collections/')
     
-    if new_name == 'CountriesDemo':
-        settings['collections_info'].append({'name': new_name})
-        schemas[new_name] = [{'name': 'UUID', 'type': 'number'},
-                {'name': 'Name', 'type': 'text'}, 
-                {'name': 'GDP', 'type': 'number'},
-                {'name': 'Cities', 'type': 'list', 'subcolumns':
-                    [{'name': 'Name', 'type': 'text'},
-                        {'name': 'Population', 'type': 'number'},
-                        {'name': 'Avg_temperature', 'type': 'number'}]}]
-        collections[new_name] = [
-                {'UUID': uuid4().int, 'Name': 'France', 'GDP': 2587000000000.0, 'Cities': [
-                    {'Name': 'Paris', 'Population': 2273305.0, 'Avg_temperature': 12.5},
-                    {'Name': 'Marseille', 'Population': 850636.0, 'Avg_temperature': 15.5}]},
-                {'UUID': uuid4().int, 'Name': 'Germany', 'GDP': 3820000000000.0, 'Cities': [
-                    {'Name': 'Cologne', 'Population': 1034175.0, 'Avg_temperature': 10.3},
-                    {'Name': 'Hamburg', 'Population': 1751775.0, 'Avg_temperature': 9.4},
-                    {'Name': 'Dresden', 'Population': 530754.0, 'Avg_temperature': 9.37}]},
-                {'UUID': uuid4().int, 'Name': 'Greece', 'GDP': 271308000000.0, 'Cities': [
-                    {'Name': 'Athens', 'Population': 3090508.0, 'Avg_temperature': 18.5},
-                    {'Name': 'Thessaloniki', 'Population': 325182.0, 'Avg_temperature': 15.1}]}]
-    else:
-        settings['collections_info'].append({'name': new_name})
-        schemas[new_name] = [{'name': 'UUID', 'type': 'number'},
-            {'name': 'Example_field', 'type': 'text'}]
-        collections[new_name] = [
-                {'UUID': uuid4().int, 'Example_field': 'First record'},
-                {'UUID': uuid4().int, 'Example_field': 'Second record'}]
+    settings['collections_info'].append({'name': new_name})
+    schemas[new_name] = [{'name': 'UUID', 'type': 'number'},
+        {'name': 'Example_field', 'type': 'text'}]
+    collections[new_name] = [
+            {'UUID': uuid4().int, 'Example_field': 'First record'},
+            {'UUID': uuid4().int, 'Example_field': 'Second record'}]
     
 
 
@@ -148,23 +157,24 @@ def delete_field_from_dicts(dicts, field):
     for dict_ in dicts:
         del dict_[field]
 
+def create_backup(collection_name):
+    filename = join(settings['data_dir'], collection_name + '.yaml')
+    if isfile(filename):
+        new_collection_name = collection_name + '_backup_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        copyfile(filename, join(settings['data_dir'], new_collection_name + '.yaml'))
 
 @get('/collections/<collection_name>/delete/')
 def collections_destroy(collection_name):
+    create_backup(collection_name)
+
     collection_info = None
     for c_info in settings['collections_info']:
         if c_info['name'] == collection_name:
             collection_info = c_info
-
     if collection_info:
         settings['collections_info'].remove(collection_info)
         collections.pop(collection_name)
         schemas.pop(collection_name)
-
-        filename = join(settings['data_dir'], collection_name + '.yml')
-        if isfile(filename):
-            new_collection_name = collection_name + '_deleted_' + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-            move(filename, join(settings['data_dir'], new_collection_name + '.yml'))
     redirect('/collections/')
 
 # this doesn't work for nested lists
@@ -193,7 +203,7 @@ def collections_show(collection_name):
     return collection_info_and_records
 
 def remove_object_with_uuid_from_collection(uuid, object_tree):
-    print(object_tree)
+    #print(object_tree)
     if isinstance(object_tree, dict):
         if 'UUID' in object_tree and object_tree['UUID'] == uuid:
             return True
@@ -223,7 +233,7 @@ def collections_add_data(collection_name):
             subcolumns = column['subcolumns']
             i = 0
             while True:
-                print(data)
+                #print(data)
                 first_input_name = 'input-{}.{}-{}'.format(column['name'], subcolumns[0]['name'], i)
                 if not first_input_name in data:
                     break
@@ -260,6 +270,8 @@ def collections_delete_data(collection_name, data_uuid):
 
 @get('/collections/<collection_name>/add-field/<field_information>/')
 def collections_add_field(collection_name, field_information):
+    create_backup(collection_name)
+
     fields_str, type_ = field_information.split(':')
     fields = fields_str.split('.')
 
@@ -292,10 +304,9 @@ def collections_add_field(collection_name, field_information):
 
 @get('/collections/<collection_name>/delete-field/<field_name>/')
 def collections_delete_field(collection_name, field_name):
-    fields = field_name.split('.')
+    create_backup(collection_name)
     
-    # TODO verify that the field_name is valid
-    # TODO CRITICAL make backup
+    fields = field_name.split('.')
     
     # edit schema
     schema = schemas[collection_name]
@@ -306,8 +317,8 @@ def collections_delete_field(collection_name, field_name):
                 schema = field_schema['subcolumns']
                 break
     for field_schema in schema:
-        print(fields)
-        print(schema)
+        #print(fields)
+        #print(schema)
         if field_schema['name'] == fields[-1]:
             schema.remove(field_schema)
 

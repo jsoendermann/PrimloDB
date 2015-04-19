@@ -20,24 +20,6 @@ function newNameIsValid() {
     return res;
 }
     
-function addField() {
-    var add_to = $('#add-to').val();
-    var name = $('#new-field-name').val();
-    var type, fieldpath;
-    if (add_to.length == 0) {
-        type = $('#add-to-toplevel-types').val();
-        fieldpath = name
-    } else {
-        type = $('#add-to-list-types').val();
-        fieldpath = add_to + '.' + name;
-    }
-
-    console.log(add_to);
-    console.log(name);
-    console.log(type);
-
-    window.location = 'add-field/' + fieldpath + ':' + type + '/';
-}
 
 $(function () {
     $(document).on('click', '.collection-link', function (event) {
@@ -71,23 +53,22 @@ $(function () {
 
     $('#new-field-name').keyup(function() {
         var newName = $('#new-field-name').val();
-        if (/^[a-zA-Z0-9_]+$/.test(newName)) {
-            $('#field-name-error').addClass('hidden');
-            $('#new-field-form').removeClass('has-error');
-        } else {
+        if (/[^a-zA-Z0-9_]/.test(newName)) {
             $('#field-name-error').removeClass('hidden');
             $('#new-field-form').addClass('has-error');
+            // TODO CRITICAL dis/enable button here and below
+        } else {
+            $('#field-name-error').addClass('hidden');
+            $('#new-field-form').removeClass('has-error');
         }
     }); 
 
+    // TODO CRITICAL ask for confirmation
     $('.delete-data-button').on('click', function (e) {
         var id = $(this).attr('id');
         var data_uuid_info = id.substring(7);
 
-        var r = confirm("Really delete?");
-        if (r === true) {
-            window.location = 'delete-data/' + data_uuid_info + '/';
-        }
+        window.location = 'delete-data/' + data_uuid_info + '/';
     });
 
     // TODO CRITICAL clean error classes when value changes
@@ -110,10 +91,8 @@ $(function () {
         var id = $(e.currentTarget).attr('id');
         id = id.substring('delete-'.length);
 
-        var r = confirm("Really delete?");
-        if (r === true) {
-            window.location = 'delete-field/' + id + '/';
-        }
+        // TODO ask for confirmation
+        window.location = 'delete-field/' + id + '/';
     });
 
     // TODO disable add field button when input is invalid or field name already exists
@@ -139,14 +118,26 @@ $(function () {
     });
 
     $('#add-field-modal-button').click(function() {
-        addField();
+        var add_to = $('#add-to').val();
+        var name = $('#new-field-name').val();
+        var type, fieldpath;
+        if (add_to.length == 0) {
+            type = $('#add-to-toplevel-types').val();
+            fieldpath = name
+        } else {
+            type = $('#add-to-list-types').val();
+            fieldpath = add_to + '.' + name;
+        }
+
+        console.log(add_to);
+        console.log(name);
+        console.log(type);
+
+        window.location = 'add-field/' + fieldpath + ':' + type + '/';
     });
 
     $('#delete-collection').click(function() {
-        var r = confirm("Really delete?");
-        if (r === true) {
-            window.location = 'delete/';
-        }        
+        window.location = 'delete/';
     });
 
     $('.append-to-list-input').keydown(function(e) {

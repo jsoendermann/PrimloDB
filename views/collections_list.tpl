@@ -21,12 +21,8 @@
    </div>
    <div class="col-md-6">
       <h3>About</h3>
-      <p>
-         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lacus tortor, pulvinar et convallis dictum, pulvinar vitae sapien. Proin consectetur quis odio ac iaculis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla non sapien nec nisi pharetra ornare vitae eu tortor. Cras in rhoncus nulla. Fusce pharetra, lectus et accumsan tristique, arcu neque congue lacus, sit amet pellentesque ligula odio id massa. Maecenas sit amet enim sit amet mauris facilisis tristique ultricies sed lorem. Etiam justo magna, aliquam vitae eros rhoncus, viverra condimentum tortor. Cras vehicula sed lacus vitae lacinia.
-      </p>
-      <p>
-         Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed et accumsan sem, ac dignissim ipsum. Fusce hendrerit massa ac diam mollis, vitae ullamcorper quam bibendum. Vestibulum eget nisi quis libero porta lacinia in non nunc. Curabitur pretium finibus velit non tincidunt. Nullam volutpat augue in condimentum interdum. Ut in euismod nulla. Suspendisse vitae arcu magna. Aenean a ipsum eu mauris pellentesque convallis eu ut ipsum. Donec euismod sit amet sapien vel elementum. Donec quis consequat libero.
-      </p>
+      <p>Welcome to PrimloDB, a <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>-based personal database. You can create a new collection on the left.</p>
+      <p>PrimloDBs source code is hosted <a href="https://github.com/jsoendermann/PrimloDB">here</a>. Please send me a pull request on GitHub if you fix a bug or add a cool feature.</p>
    </div>
 </div>
 {% endblock %}

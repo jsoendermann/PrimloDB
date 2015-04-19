@@ -263,7 +263,7 @@
         <h4 class="modal-title" id="myModalLabel">Add field</h4>
       </div>
       <div class="modal-body">
-        <form onsubmit="return false">
+        <form>
             <div class="form-group" id="new-field-form">
                 <label for="name">Name</label>
                 <input class="form-control" id="new-field-name" placeholder="Field name..." />
@@ -291,7 +291,7 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="add-field-modal-button">Add</button>
+                    <button type="button" class="btn btn-primary" id="add-field-modal-button" type="submit">Add</button>
                   </div>
                 </div>
               </div>
