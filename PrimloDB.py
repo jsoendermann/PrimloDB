@@ -1,4 +1,3 @@
-# TODO tidy up imports
 from bottle import *
 from bottle import jinja2_view as view, jinja2_template as template
 from appdirs import user_data_dir
@@ -18,8 +17,6 @@ import datetime
 from uuid import uuid4
 from copy import deepcopy
 from sys import argv
-
-# TODO test with cedict data
 
 SETTINGS_DIR = user_data_dir('PrimloDB', 'YangChuanzhang')
 SETTINGS_FILENAME = join(SETTINGS_DIR, 'settings.yaml')
@@ -93,13 +90,7 @@ for collection_info in settings['collections_info']:
 
 if createExampleCollections:
     addExampleCollections()
-    
-    
-# TODO create backups of collection files
-# TODO timer that saves every 2 minutes
-# TODO no spaces in column names
-# TODO make it possible to edit data
-# 
+
 # exit handler
 def exit_handler():
     print('Exiting...')
@@ -178,7 +169,6 @@ def collections_destroy(collection_name):
         schemas.pop(collection_name)
     redirect('/collections/')
 
-# this doesn't work for nested lists
 def max_list_length(record):
     if isinstance(record, list):
         return sum(map(max_list_length, record))
@@ -200,7 +190,6 @@ def collections_show(collection_name):
             'records': [dict(record, **{'max_list_length': max_list_length(record)}) for record in records], 
             'yaml': dump(yaml_data, Dumper=Dumper)}
 
-    #print(collection_info_and_records)
     return collection_info_and_records
 
 def remove_object_with_uuid_from_collection(uuid, object_tree):
@@ -234,7 +223,6 @@ def collections_add_data(collection_name):
             subcolumns = column['subcolumns']
             i = 0
             while True:
-                #print(data)
                 first_input_name = 'input-{}.{}-{}'.format(column['name'], subcolumns[0]['name'], i)
                 if not first_input_name in data:
                     break
@@ -256,7 +244,6 @@ def collections_add_data(collection_name):
                 new_record[column['name']] = raw
 
     collections[collection_name].append(new_record)
-    # TODO CRITICAL redirect to adding tab
     redirect('/collections/{}/#add'.format(collection_name))
 
 
@@ -318,8 +305,6 @@ def collections_delete_field(collection_name, field_name):
                 schema = field_schema['subcolumns']
                 break
     for field_schema in schema:
-        #print(fields)
-        #print(schema)
         if field_schema['name'] == fields[-1]:
             schema.remove(field_schema)
 
